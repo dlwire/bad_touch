@@ -1,24 +1,23 @@
 import os, sys, re
 from git import *
 
+def add_file_if_needed(touches, filename):
+  if not touches.has_key(filename):
+    touches[filename] = {}
+    touches[filename]['story'] = set()
+    touches[filename]['defect'] = set()
+
 def get_touches(repo):
   touches = {}
 
   for commit in repo.iter_commits():
-    filename = commit.stats.files.keys()[0] if commit.stats.files.keys() else None
-    if filename:
-      if not touches.has_key(filename):
-        touches[filename] = {}
-        touches[filename]['story'] = []
-        touches[filename]['defect'] = []
+    for filename in commit.stats.files.keys():
+      add_file_if_needed(touches, filename)
       rally_id = get_rally_id(commit)
-
       if rally_id is not None:
         change_type = get_change_type(rally_id)
-        try:
-          touches[filename][change_type].index(rally_id)
-        except:
-          touches[filename][change_type].append(rally_id)
+        touches[filename][change_type].add(rally_id)
+        
   return touches
 
 def generate_output(touches):

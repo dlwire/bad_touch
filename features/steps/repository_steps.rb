@@ -54,8 +54,28 @@ Given(/^"([^"]*)" is a git repository with two matching defect commits to one fi
   step 'I commit a change to "' + repo_name + '/defect_work.txt" with comment "DE1"'
 end
 
+Given(/^"([^"]*)" is a git repository with one commit to two files$/) do |repo_name|
+  step '"' + repo_name + '" is an empty git repository'
+  step 'I run `touch ' + repo_name + '/file1.txt`'
+  step 'I run `touch ' + repo_name + '/file2.txt`'
+  step 'I commit all changes to "' + repo_name + '" with comment "S1"'
+end
+
 Given(/^I commit a change to "([^"]*)\/([^"]*)" with comment "([^"]*)"$/) do |repo_name, filename, comment|
   step 'I append to "' + repo_name + '/' + filename + '" with "some change"'
   step 'I run `git --git-dir ' + repo_name + '/.git add ' + repo_name + '/' + filename + '`'
   step 'I run `git --git-dir ' + repo_name + '/.git commit -m"' + comment + '"`'
+end
+
+Given(/^I commit all changes to "([^"]*)" with comment "([^"]*)"$/) do |repo_name, comment|
+  step 'I run `git --git-dir ' + repo_name + '/.git add ' + repo_name + '/.`'
+  step 'I run `git --git-dir ' + repo_name + '/.git commit -m"' + comment + '"`'
+end
+
+When(/^I run bad_touch on "([^"]*)"$/) do |repo_name|
+  step 'I run `python ' + Dir.getwd + '/src/bad_touch.py ' + repo_name + '`'
+end
+
+Then(/^the output for "([^"]*)" should be "([^"]*)"$/) do |repo_name, output|
+  step 'the stdout from "python ' + Dir.getwd + '/src/bad_touch.py ' + repo_name + '" should contain exactly "' + output + '"'
 end
