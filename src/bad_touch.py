@@ -1,30 +1,22 @@
 import os, sys, re
 from git import *
 
-def add_file_if_needed(touches, filename):
-  if not touches.has_key(filename):
-    touches[filename] = {}
-    touches[filename]['story'] = set()
-    touches[filename]['defect'] = set()
+def add_commit_touches(touches, commit):
+  for filename in commit.stats.files.keys():
+    filetouch = touches[filename] if touches.has_key(filename) else new_filetouch()
 
-def get_touches(repo):
-  touches = {}
-
-  for commit in repo.iter_commits():
-    for filename in commit.stats.files.keys():
-      add_file_if_needed(touches, filename)
-      rally_id = get_rally_id(commit)
-      if rally_id is not None:
-        change_type = get_change_type(rally_id)
-        touches[filename][change_type].add(rally_id)
-        
+    rally_id = get_rally_id(commit)
+    if rally_id is not None:
+      change_type = get_change_type(rally_id)
+      filetouch[change_type].add(rally_id)
+    touches[filename] = filetouch
   return touches
 
-def generate_output(touches):
-  for file in touches:
-    print(file +
-      ',' + str(len(touches[file]['story'])) +
-      ',' + str(len(touches[file]['defect'])))
+def new_filetouch():
+  filetouch = {}
+  filetouch['story'] = set()
+  filetouch['defect'] = set()
+  return filetouch
 
 def get_change_type(rally_id):
   if is_story_work(rally_id):
@@ -45,6 +37,12 @@ def is_story_work(rally_id):
 def is_defect_work(rally_id):
   return rally_id.lower().startswith('de')
 
+def print_file_touches(file):
+  print(file[0] +
+    ',' + str(len(file[1]['story'])) +
+    ',' + str(len(file[1]['defect']))
+  )
+
 def main():
   repo_path = sys.argv[1]
 
@@ -61,8 +59,8 @@ def main():
       if len(repo.refs) == 0:
         print("'" + repo_path + "' is empty")
         exit(0)
-      touches = get_touches(repo)
-      generate_output(touches)
+      touches = reduce(add_commit_touches, repo.iter_commits(), {})
+      map(print_file_touches, touches.items())
 
 if __name__ == "__main__":
     main()
