@@ -59,3 +59,9 @@ Feature: Translate git history into csv with touch counts for stories and defect
     When I run bad_touch on "two_files_one_commit"
     Then the exit status should be 0
     And the output for "two_files_one_commit" should be "two_files_one_commit/file2.txt,1,0\ntwo_files_one_commit/file1.txt,1,0\n"
+
+  Scenario: Repository with a subdirectory
+    Given "subdirectory" is a git repository with a subdirectory
+    When I run bad_touch on "subdirectory"
+    Then the exit status should be 0
+    And the output for "subdirectory" should be "subdirectory/dir/file1.txt,0,1\n"

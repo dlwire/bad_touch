@@ -61,6 +61,13 @@ Given(/^"([^"]*)" is a git repository with one commit to two files$/) do |repo_n
   step 'I commit all changes to "' + repo_name + '" with comment "S1"'
 end
 
+Given(/^"([^"]*)" is a git repository with a subdirectory$/) do |repo_name|
+  step '"' + repo_name + '" is an empty git repository'
+  step 'a directory named "' + repo_name + '/dir"'
+  step 'I run `touch ' + repo_name + '/dir/file1.txt`'
+  step 'I commit all changes to "' + repo_name + '" with comment "DE1"'
+end
+
 Given(/^I commit a change to "([^"]*)\/([^"]*)" with comment "([^"]*)"$/) do |repo_name, filename, comment|
   step 'I append to "' + repo_name + '/' + filename + '" with "some change"'
   step 'I run `git --git-dir ' + repo_name + '/.git add ' + repo_name + '/' + filename + '`'

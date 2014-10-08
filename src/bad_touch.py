@@ -3,13 +3,27 @@ from git import *
 
 def add_commit_touches(touches, commit):
   for filename in commit.stats.files.keys():
-    filetouch = touches[filename] if touches.has_key(filename) else new_filetouch()
-
     rally_id = get_rally_id(commit)
+
+    filetouch = touches[filename] if touches.has_key(filename) else new_filetouch()
     if rally_id is not None:
       change_type = get_change_type(rally_id)
       filetouch[change_type].add(rally_id)
     touches[filename] = filetouch
+  return touches
+
+def add_file_touches(repo):
+  touches = {}
+  for tree in repo.tree().trees:
+    for file in tree.blobs:
+      for commit in repo.iter_commits(paths=file.path):
+        rally_id = get_rally_id(commit)
+
+        filetouch = touches[file.path] if touches.has_key(file.path) else new_filetouch()
+        if rally_id is not None:
+          change_type = get_change_type(rally_id)
+          filetouch[change_type].add(rally_id)
+        touches[file.path] = filetouch
   return touches
 
 def new_filetouch():
@@ -60,6 +74,7 @@ def main():
         print("'" + repo_path + "' is empty")
         exit(0)
       touches = reduce(add_commit_touches, repo.iter_commits(), {})
+      # touches = add_file_touches(repo)
       map(print_file_touches, touches.items())
 
 if __name__ == "__main__":
