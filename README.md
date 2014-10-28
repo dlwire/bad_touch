@@ -14,4 +14,5 @@ cucumber</code></pre>
 
 usage
 =====
-<pre><code>python src/bad_touch.py path/to/repository/root</code></pre>
+<pre><code>easy_install gitpython
+python src/bad_touch.py path/to/repository/root</code></pre>
