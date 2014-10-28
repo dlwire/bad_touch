@@ -7,6 +7,10 @@ The produced data will give an idea of the change density of files and the chang
 
 For large repositories this can take a significant amount of time (>30 minutes) and currently gives no progress indication.
 
+requirements
+============
+<pre><code>easy_install gitpython</code></pre>
+
 tests
 =====
 <pre><code>bundle install
@@ -14,5 +18,4 @@ cucumber</code></pre>
 
 usage
 =====
-<pre><code>easy_install gitpython
-python src/bad_touch.py path/to/repository/root</code></pre>
+<pre><code>python src/bad_touch.py path/to/repository/root</code></pre>
